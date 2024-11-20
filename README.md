@@ -38,6 +38,41 @@ print toTable [
 ]
 ```
 
+### Function reference
+
+#### `tabular`
+
+##### Description
+
+Create a new ascii table with given rows
+
+##### Usage
+
+<pre>
+<b>tabular</b> <ins>rows</ins> <i>:block</i>
+</pre>
+
+##### Attributes
+
+| Option | Type(s) | Description |
+|----|----|----|
+| header | :block | set table header columns |
+| align | :literal, :block | set column alignments (one value or array) |
+| unicode | :logical | use unicode ASCII characters |
+| padding | :integer, :block | set custom padding per column (one value or array) |
+
+##### Returns
+
+- *:string*
+
+##### Examples
+
+```red
+print tabular.header:["Name" "Age"] [
+    ["John" 25]
+    ["Jane" 32]
+]
+
 <hr/>
 
 ### License
