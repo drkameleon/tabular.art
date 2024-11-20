@@ -8,8 +8,6 @@
 
 </p>
 
-<p align="center"><img width="90%" align="center" src="https://raw.githubusercontent.com/drkameleon/grace.art/main/screenshot.png"/></p>
-
 --- 
  
 <!--ts-->
@@ -25,16 +23,19 @@
 
 ### What does this package do?
 
-This package include a simple code editor, that should by no means be considered anything other than a very draft example of what we could do with Arturo's UI. :-)
+This package includes a simple - but powerful - ASCII table generator
 
 ### How do I use it?
 
-Simply `import` it and use the included `grace` function:
+Simply `import` it and use any of the provided helper functions:
 
 ```red
-import "grace"!
+import "tabular"!
 
-grace
+print toTable [
+    ["1.1" "2.1" "3.1"]
+    ["1.2" "2.2" "3.2"]
+]
 ```
 
 <hr/>
