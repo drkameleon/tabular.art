@@ -8,6 +8,8 @@
 
 </p>
 
+<p align="center"><img width="90%" align="center" src="https://raw.githubusercontent.com/drkameleon/tabular.art/main/screenshot.png"/></p>
+
 --- 
  
 <!--ts-->
@@ -27,7 +29,11 @@ This package includes a simple - but powerful - ASCII table generator
 
 ### How do I use it?
 
-Simply `import` it and use any of the provided helper functions:
+Simply `import` it and use any of the provided helper functions, mainly `tabular`
+
+> [!TIP]
+> The code below generates the exact same tables 
+> you may see in the screenshot above^ :wink:
 
 ```red
 import "tabular"!
