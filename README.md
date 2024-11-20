@@ -32,9 +32,37 @@ Simply `import` it and use any of the provided helper functions:
 ```red
 import "tabular"!
 
-print toTable [
-    ["1.1" "2.1" "3.1"]
-    ["1.2" "2.2" "3.2"]
+; A simple table
+print tabular [
+    [1 2 3]
+    [4 5 6]
+]
+
+; A table with header
+print tabular.header:["Item" "Qty" "Price"][
+    ["Apples"    5   2.99]
+    ["Oranges"   10  3.49]
+    ["Bananas"   8   1.99]
+]
+
+; A table with header and custom-aligned columns
+print tabular
+    .header:["Item" "Qty" "Price"] 
+    .align:['left 'right 'right]
+[
+    ["Apples"  5  2.99]
+    ["Oranges" 10 3.49]
+    ["Bananas" 8  1.99]
+]
+
+; A Unicode-based table with custom-aligned columns
+; and variable, user-defined paddings
+print tabular.unicode
+    .padding:[1 3 2]
+    .align:['left 'center 'right] 
+[
+    ["narrow" "medium" "wide"]
+    ["col1"   "col2"   "col3"]
 ]
 ```
 
@@ -64,14 +92,6 @@ Create a new ascii table with given rows
 ##### Returns
 
 - *:string*
-
-##### Examples
-
-```red
-print tabular.header:["Name" "Age"] [
-    ["John" 25]
-    ["Jane" 32]
-]
 
 <hr/>
 
