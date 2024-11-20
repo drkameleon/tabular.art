@@ -216,12 +216,12 @@ define :tabularTable [
 ;---------------------------
 
 tabular: function [rows :block][
-    ;; description: « create a new ascii table with given rows
+    ;; description: « create a new ASCII table with given rows
     ;; options: [
     ;;      header: :block « set table header columns
-    ;;      align: :literal :block « set column alignments (one value or array)
-    ;;      unicode: :logical « use unicode ASCII characters
-    ;;      padding: :integer :block « set custom padding per column (one value or array)
+    ;;      align: :literal :block « set column alignments (single value or array)
+    ;;      unicode: :logical « use Unicode characters
+    ;;      padding: :integer :block « set custom padding per column (single value or array)
     ;; ]
     ;; returns: :string
     ;; example: {

@@ -29,7 +29,7 @@ This package includes a simple - but powerful - ASCII table generator, with all 
 
 ### How do I use it?
 
-Simply `import` it and use any of the provided helper functions, mainly `tabular`
+Simply `import` it and use any of the provided helper functions; mainly, one: `tabular`.
 
 > [!TIP]
 > The code below generates the exact same tables 
@@ -78,7 +78,7 @@ print tabular.unicode
 
 ##### Description
 
-Create a new ascii table with given rows
+Create a new ASCII table with given rows
 
 ##### Usage
 
@@ -91,9 +91,9 @@ Create a new ascii table with given rows
 | Option | Type(s) | Description |
 |----|----|----|
 | header | :block | set table header columns |
-| align | :literal, :block | set column alignments (one value or array) |
-| unicode | :logical | use unicode ASCII characters |
-| padding | :integer, :block | set custom padding per column (one value or array) |
+| align | :literal, :block | set column alignments (single value or array) |
+| unicode | :logical | use Unicode characters |
+| padding | :integer, :block | set custom padding per column (single value or array) |
 
 ##### Returns
 
