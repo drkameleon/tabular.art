@@ -1,0 +1,249 @@
+;===============================================
+; Tabular.art
+;
+; Feature-rich ASCII table generator
+; for Arturo
+;
+; MIT License
+; (c) 2024 Yanis Zafirópulos
+;==========================================================
+; @file: src/tabular.art
+;==========================================================
+
+;---------------------------
+; The main type
+;---------------------------
+
+define :tabularTable [
+    ;---------------------------
+    ; Data
+    ;---------------------------
+
+    simpleStyle: #./"styles/simple.art"
+    unicodeStyle: #./"styles/unicode.art"
+
+    ;---------------------------
+    ; Constructor
+    ;---------------------------
+
+    init: method [
+        rows :block
+        columns :block :null
+    ][
+        \rows: rows
+        \columns: columns
+        \style: \simpleStyle
+        \hasHeader?: not? null? columns
+        \alignments: []
+        \paddings: array.of: max map rows => size 1
+    ]
+
+    ;---------------------------
+    ; Setters
+    ;---------------------------
+
+    ; Style setters
+    setSimple: method [][
+        \style: \simpleStyle
+    ]
+
+    setUnicode: method [][
+        \style: \unicodeStyle
+    ]
+
+    ; Alignment setter
+    setAlignment: method [alignments :literal :block][
+        switch literal? alignments [
+            \alignments: array.of: size \rows\0 alignments
+        ][
+            ensure.that: "Number of alignments must match number of columns"
+                -> equal? size alignments max map \rows => size
+            \alignments: alignments
+        ]
+        \validateConfig
+    ]
+
+    ; Padding setter
+    setPadding: method [padding :integer :block][
+        switch integer? padding [
+            \paddings: array.of: size \rows\0 padding
+        ][
+            ensure.that: "Number of paddings must match number of columns"
+                -> equal? size padding max map \rows => size
+            \paddings: padding
+        ]
+        \validateConfig
+    ]
+
+    ;---------------------------
+    ; Helpers
+    ;---------------------------
+
+    validateConfig: method [][
+        colCount: max map \rows => size
+        
+        ; Check alignments length
+        if not? empty? \alignments ->
+            ensure.that:"Number of alignments must match number of columns"
+                -> colCount = size \alignments
+        
+        ; Check paddings length
+        if not? empty? \paddings ->
+            ensure.that:"Number of paddings must match number of columns"
+                -> colCount = size \paddings
+    ]
+
+    ; Calculate column widths
+    getColumnWidths: method [][
+        widths: new []
+        maxColumns: max map \rows => size
+
+        i: 0
+        while [i < maxColumns][
+            columnValues: map \rows => [
+                val: get & i
+                (string? val)? -> size val
+                               -> size to :string val
+            ]
+
+            switch \hasHeader? [
+                headerWidth: size \columns\[i]
+                maxWidth: max append columnValues headerWidth
+            ][
+                maxWidth: max columnValues
+            ]
+
+            'widths ++ maxWidth
+            inc 'i
+        ]
+
+        return widths
+    ]
+
+    ; Generate the separator line
+    getSeparator: method [widths, startChar, middleChar, endChar][
+        parts: map.with:'i widths => [
+            ; Account for both padding and the mandatory 1-space gap
+            repeat \style\horLine & + (2 * \paddings\[i]) + 2
+        ]
+        join @[
+            startChar
+            join.with:middleChar parts
+            endChar
+            "\n"
+        ]
+    ]
+
+    formatRow: method [row, widths][
+        formatted: map.with:'i widths 'w [
+            val: ""
+            if i < size row ->
+                val: to :string row\[i]
+
+            alignment: 'left
+            if i < size \alignments ->
+                alignment: \alignments\[i]
+            
+            padding: \paddings\[i]
+            ; Add 1 to effective width to ensure minimum spacing from borders
+            effectiveWidth: w + (2 * padding) + 2
+
+            case alignment [
+                'left   -> " " ++ (pad.right val (effectiveWidth-2)) ++ " "
+                'right  -> " " ++ (pad val (effectiveWidth-2)) ++ " "
+                'center -> " " ++ (pad.center val (effectiveWidth-2)) ++ " "
+            ]
+        ]
+        return formatted
+    ]
+
+    ;---------------------------
+    ; Main methods
+    ;---------------------------
+
+    render: method [][
+        widths: \getColumnWidths
+        output: ""
+
+        ; Top border
+        output: output ++ \getSeparator widths 
+                                \style\topLeft
+                                \style\tTop
+                                \style\topRight
+
+        ; Header (if exists)
+        if \hasHeader? [
+            headerFormatted: \formatRow \columns widths
+            line: join @[
+                \style\verLine
+                join.with:\style\verLine headerFormatted
+                \style\verLine
+                "\n"
+            ]
+            output: output ++ line
+
+            ; Header separator
+            output: output ++ \getSeparator widths 
+                                    \style\tLeft
+                                    \style\cross
+                                    \style\tRight
+        ]
+
+        ; Table body
+        loop \rows 'row [
+            rowFormatted: \formatRow row widths
+            line: join @[
+                \style\verLine
+                join.with:\style\verLine rowFormatted
+                \style\verLine
+                "\n"
+            ]
+            output: output ++ line
+        ]
+
+        ; Bottom border
+        output: output ++ \getSeparator widths 
+                                \style\bottomLeft
+                                \style\tBottom
+                                \style\bottomRight
+
+        return output
+    ]
+]
+
+;---------------------------
+; Exportable helper
+;---------------------------
+
+tabular: function [rows :block][
+    ;; description: « create a new ascii table with given rows
+    ;; options: [
+    ;;      header: :block « set table header columns
+    ;;      align: :literal :block « set column alignments (one value or array)
+    ;;      unicode: :logical « use unicode ASCII characters
+    ;;      padding: :integer :block « set custom padding per column (one value or array)
+    ;; ]
+    ;; returns: :string
+    ;; example: {
+    ;;      print tabular.header:["Name" "Age"] [
+    ;;          ["John" 25]
+    ;;          ["Jane" 32]
+    ;;      ]
+    ;; }
+    
+    table: to :tabularTable @[rows attr 'header]!
+
+    unless null? withAlignment: <= attr 'align [
+        table\setAlignment withAlignment
+    ]
+
+    unless null? withPadding: <= attr 'padding [
+        table\setPadding withPadding
+    ]
+
+    unless null? attr 'unicode [
+        table\setUnicode
+    ]
+
+    return table\render
+]
