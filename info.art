@@ -1,0 +1,2 @@
+entry: {src/tabular}
+requires: [> 0.9.83]
