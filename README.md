@@ -25,7 +25,7 @@
 
 ### What does this package do?
 
-This package includes a simple - but powerful - ASCII table generator
+This package includes a simple - but powerful - ASCII table generator, with all the (tabular) [bells](https://www.youtube.com/watch?v=BfWJqKIxyGc) and whistles, bundle in an easy-to-use package for Arturo.
 
 ### How do I use it?
 
