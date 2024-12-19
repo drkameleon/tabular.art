@@ -64,10 +64,10 @@ print tabular
 ; A Unicode-based table with custom-aligned columns
 ; and variable, user-defined paddings
 print tabular.unicode
-    .padding:[1 3 2]
+    .padding:[1 4 2]
     .align:['left 'center 'right] 
 [
-    ["narrow" "medium" "wide"]
+    ["narrow" "widest" "mid"]
     ["col1"   "col2"   "col3"]
 ]
 ```
