@@ -8,7 +8,7 @@
 
 </p>
 
-<p align="center"><img width="90%" align="center" src="https://raw.githubusercontent.com/drkameleon/tabular.art/main/screenshot.png"/></p>
+<p align="center"><img width="90%" align="center" src="https://raw.githubusercontent.com/drkameleon/tabular.art/main/example.png"/></p>
 
 --- 
  
