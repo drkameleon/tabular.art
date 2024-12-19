@@ -35,7 +35,7 @@ define :tabularTable [
         \style: \simpleStyle
         \hasHeader?: not? null? columns
         \alignments: []
-        \paddings: array.of: max map rows => size 1
+        \paddings: array.of: max map rows => size 1    ; default padding of 1
     ]
 
     ;---------------------------
@@ -106,12 +106,9 @@ define :tabularTable [
                                -> size to :string val
             ]
 
-            switch \hasHeader? [
-                headerWidth: size \columns\[i]
-                maxWidth: max append columnValues headerWidth
-            ][
-                maxWidth: max columnValues
-            ]
+            maxWidth: max columnValues
+            if \hasHeader? ->
+                maxWidth: max @[maxWidth size \columns\[i]]
 
             'widths ++ maxWidth
             inc 'i
@@ -122,9 +119,10 @@ define :tabularTable [
 
     ; Generate the separator line
     getSeparator: method [widths, startChar, middleChar, endChar][
-        parts: map.with:'i widths => [
-            ; Account for both padding and the mandatory 1-space gap
-            repeat \style\horLine & + (2 * \paddings\[i]) + 2
+        parts: map.with:'i widths 'w [
+            padding: \paddings\[i]
+            width: w + padding * 2     
+            repeat \style\horLine width
         ]
         join @[
             startChar
@@ -136,22 +134,14 @@ define :tabularTable [
 
     formatRow: method [row, widths][
         formatted: map.with:'i widths 'w [
-            val: ""
-            if i < size row ->
-                val: to :string row\[i]
-
-            alignment: 'left
-            if i < size \alignments ->
-                alignment: \alignments\[i]
-            
+            val: to :string (get row i) ?? ""
             padding: \paddings\[i]
-            ; Add 1 to effective width to ensure minimum spacing from borders
-            effectiveWidth: w + (2 * padding) + 2
-
-            case alignment [
-                'left   -> " " ++ (pad.right val (effectiveWidth-2)) ++ " "
-                'right  -> " " ++ (pad val (effectiveWidth-2)) ++ " "
-                'center -> " " ++ (pad.center val (effectiveWidth-2)) ++ " "
+            alignment: (i < size \alignments) ? -> \alignments\[i] -> 'left
+            
+            (padding = 0)? -> val -> case alignment [
+                'left   -> (repeat " " padding) ++ (pad.right val w) ++ (repeat " " padding)
+                'right  -> (repeat " " padding) ++ (pad val w) ++ (repeat " " padding)
+                'center -> (repeat " " padding) ++ (pad.center val w) ++ (repeat " " padding)
             ]
         ]
         return formatted
