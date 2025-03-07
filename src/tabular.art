@@ -79,6 +79,40 @@ define :tabularTable [
     ; Helpers
     ;---------------------------
 
+    visibleSize: function [str][
+        ; ANSI escape code pattern: \e[...m
+        ; We'll use regex to remove these codes and then measure the string
+        cleaned: replace str {/\e\[[\d;]*m/} ""
+        return size cleaned
+    ]
+
+    visiblePadLeft: method [str width][
+        visLen: \visibleSize str
+        if visLen >= width -> return str
+        
+        paddingNeeded: width - visLen
+        return (repeat " " paddingNeeded) ++ str
+    ]
+
+    visiblePadRight: method [str width][
+        visLen: \visibleSize str
+        if visLen >= width -> return str
+        
+        paddingNeeded: width - visLen
+        return str ++ repeat " " paddingNeeded
+    ]
+
+    visiblePadCenter: method [str width][
+        visLen: \visibleSize str
+        if visLen >= width -> return str
+        
+        paddingNeeded: width - visLen
+        leftPad: paddingNeeded / 2
+        rightPad: paddingNeeded - leftPad
+        
+        return (repeat " " leftPad) ++ str ++ (repeat " " rightPad)
+    ]
+
     validateConfig: method [][
         colCount: max map \rows => size
         
@@ -102,13 +136,15 @@ define :tabularTable [
         while [i < maxColumns][
             columnValues: map \rows => [
                 val: get & i
-                (string? val)? -> size val
-                               -> size to :string val
+                strVal: to :string val ?? ""
+                \visibleSize strVal
             ]
 
             maxWidth: max columnValues
-            if \hasHeader? ->
-                maxWidth: max @[maxWidth size \columns\[i]]
+            if \hasHeader? [
+                headerStr: to :string \columns\[i] ?? ""
+                maxWidth: max @[maxWidth \visibleSize headerStr]
+            ]
 
             'widths ++ maxWidth
             inc 'i
@@ -138,11 +174,14 @@ define :tabularTable [
             padding: \paddings\[i]
             alignment: (i < size \alignments) ? -> \alignments\[i] -> 'left
             
-            (padding = 0)? -> val -> case alignment [
-                'left   -> (repeat " " padding) ++ (pad.right val w) ++ (repeat " " padding)
-                'right  -> (repeat " " padding) ++ (pad val w) ++ (repeat " " padding)
-                'center -> (repeat " " padding) ++ (pad.center val w) ++ (repeat " " padding)
+            paddedVal: case alignment [
+                'left   -> \visiblePadRight val w
+                'right  -> \visiblePadLeft val w
+                'center -> \visiblePadCenter val w
             ]
+            
+            (padding = 0)? -> paddedVal -> 
+                (repeat " " padding) ++ paddedVal ++ (repeat " " padding)
         ]
         return formatted
     ]
