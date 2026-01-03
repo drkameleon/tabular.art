@@ -105,7 +105,7 @@ Create a new ASCII table with given rows
 
 MIT License
 
-Copyright (c) 2024 Yanis Zafirópulos
+Copyright (c) 2026 Yanis Zafirópulos
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
